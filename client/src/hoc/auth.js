@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-import Axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { auth } from '../_actions/user_action'
+import { auth } from '../_actions/user_actions'
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function (SpecificComponent, option, adminRoute = null) {
   //option -> null / true / false
@@ -11,11 +10,11 @@ export default function (SpecificComponent, option, adminRoute = null) {
   
   function AuthenticationCheck(props) {
       
+      let user = useSelector(state => state.user);
       const dispatch = useDispatch();
 
       useEffect(() => {
         dispatch(auth()).then(response => {
-          console.log("response : ", response);
 
           //로그인 하지 않은 상태
           if(!response.payload.isAuth) {
@@ -36,7 +35,7 @@ export default function (SpecificComponent, option, adminRoute = null) {
       }, [])
 
       return (
-        <SpecificComponent />
+        <SpecificComponent {...props} user={user} />
       )
     }
 
