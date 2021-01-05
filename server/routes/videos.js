@@ -5,6 +5,7 @@ const router = express.Router();
 const { auth } = require("../middleware/auth");
 const multer = require("multer");
 var ffmpeg = require("fluent-ffmpeg");
+const { Video } = require('../models/Video');
 
 // STORAGE MULTER CONFIG
 let storage = multer.diskStorage({
@@ -39,6 +40,39 @@ router.post('/uploadfiles', (req, res) => {
     })
 
 })
+
+router.post('/uploadVideo', (req, res) => {
+    
+    //비디오 정보들을 저장한다.
+
+    const video = new Video(req.body)
+
+    video.save((err, doc) => {
+        if(err) return res.json({ success: false, err })
+        res.status(200).json({ success: true })
+    })
+})
+
+router.get("/getVideos", (req, res) => {
+
+    Video.find()
+        .populate('writer')
+        .exec((err, videos) => {
+            if(err) return res.status(400).send(err);
+            res.status(200).json({ success: true, videos })
+        })
+
+});
+
+router.post("/getVideoDetail", (req, res) => {
+
+    Video.findOne({ "_id" : req.body.videoId })
+    .populate('writer')
+    .exec((err, video) => {
+        if(err) return res.status(400).send(err);
+        res.status(200).json({ success: true, video })
+    })
+});
 
 router.post('/thumbnail', (req, res) => {
     
